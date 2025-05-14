@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>منصة رفع التطبيقات</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --success: #34A853;
+            --danger: #4CAF50;
+            --background: #f8f9fa;
+            --surface: #ffffff;
+            --border: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 0px 10px 10px 10px;
+        }
+
+        .header-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .icon-preview {
+            width: 100px;
+            height: 100px;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .icon-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .app-title-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1.1rem;
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .screenshots-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .screenshot-item {
+            width: 100px;
+            height: 100px;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* أضف هذا في الـ CSS */
+   .screenshot-item img {
+       max-width: 100%;
+       height: auto;
+       object-fit: contain;
+   }
+
+        .file-upload-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--background);
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            color: #4a5568;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .file-upload-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #edf2f7;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1.0rem 0;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: var(--success);
+            transition: width 0.3s ease;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.1rem;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #1557b0;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .alert-success {
+            background: #f0fff4;
+            color: #2f855a;
+            border: 1px solid #c6f6d5;
+        }
+
+        .alert-error {
+            background: #fff5f5;
+            color: #c53030;
+            border: 1px solid #fed7d7;
+        }
+        
+       .loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    } 
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+} 
+
+        .upload-options {
+    display: flex;
+    width: 100%;           /* تأخذ عرض الشاشة */
+    gap: 0.5rem;           /* مسافة بين البطاقات (اختياري) */
+    margin-bottom: 0;
+}
+
+.option-card {
+    flex: 1;               /* كل بطاقة تأخذ نصف المساحة */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem;
+    font-size: 0.8rem;
+    height: 2.5rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+} 
+
+.option-card:hover {
+    border-color: var(--primary);
+}
+
+.hidden {
+    display: none;
+} 
+
+        .type-selector {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+        
+
+    h1 {
+      color: var(--primary);     /* اللون */
+      font-size: 32px;           /* حجم الخط */
+      font-weight: bold;         /* سمك الخط: normal | bold | 100-900 */
+      font-family: 'Arial', sans-serif; /* نوع الخط */
+      text-align: center;        /* توسيط النص */
+      letter-spacing: 1px;       /* تباعد بين الحروف */
+      margin-top: 10px;          /* مسافة من الأعلى */
+    }
+    footer {
+      background-color: #ffffff;
+      color: #333;
+      text-align: center;
+      padding: 15px;
+      font-size: 18px;
+    }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>رفع تطبيق جديد</h1>
+        <div class="header-section">
+            <div class="icon-preview" id="iconPreviewContainer" onclick="document.getElementById('appIcon').click()">
+                <input type="file" id="appIcon" accept="image/*" hidden>
+                <img id="iconPreview" alt="">
+            </div>
+            <div style="flex: 1;">
+                <input type="text" id="appTitle" class="app-title-input" placeholder="اسم التطبيق" required>
+                <input type="text" id="appSize" class="app-title-input" placeholder="حجم التطبيق" readonly style="margin-top: 0.5rem;">
+            </div>
+        </div>
+
+        <form id="uploadForm">
+            <div class="form-group">
+                <label>الوصف:</label>
+                <textarea id="appDescription" class="app-title-input" rows="4" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>نوع التطبيق:</label>
+                <select id="appType" class="type-selector" required>
+                    <option value="apk">APK</option>
+                    <option value="swb">SWB</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>صور الشرح (3 صور بالضبط):</label>
+                <input type="file" id="screenshots" accept="image/*" multiple hidden>
+                <div class="screenshots-container" id="screenshotsGrid"></div>
+                <button type="button" class="file-upload-btn" onclick="document.getElementById('screenshots').click()">
+                    <i class="material-icons-round">add_photo_alternate</i>
+                    اختر الصور
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label>طريقة الرفع:</label>
+                <div class="upload-options">
+                    <div class="option-card" onclick="handleFileOption('file')">
+                        <i class="material-icons-round">attach_file</i>
+                        رفع ملف
+                    </div>
+                    <div class="option-card" onclick="handleFileOption('link')">
+                        <i class="material-icons-round">link</i>
+                        رفع عبر الرابط
+                    </div>
+                </div>
+
+                <div id="fileUploadSection" class="hidden">
+                    <input type="file" id="appFile" accept=".apk,.swb" hidden>
+                    <button type="button" class="file-upload-btn" onclick="document.getElementById('appFile').click()">
+                        اختر ملف التطبيق
+                    </button>
+                </div>
+
+                <div id="linkUploadSection" class="hidden">
+                    <input type="url" id="appLink" class="app-title-input" placeholder="رابط التطبيق (مثال: https://example.com/app.apk)">
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+            </div>
+            <div id="uploadStatus" style="display: none; text-align: center; padding: 20px;">
+    <p style="margin-bottom: 10px; font-weight: bold;">جاري الرفع...</p>
+    <div class="loader"></div>
+    <div style="margin-top: 15px;">
+        <div id="progressBar" style="width: 0%; height: 8px; background: #4CAF50; transition: 0.3s;"></div>
+        <span id="progressText" style="display: block; margin-bottom: 10px;">0%</span>
+    </div>
+</div>
+
+<div id="successModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3 style="color: #4CAF50;">✅ تم الرفع بنجاح!</h3>
+        <p>سيتم مراجعة التطبيق قبل النشر</p>
+        <button onclick="closeModal()" style="background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">موافق</button>
+    </div>
+</div>
+
+            <button type="submit" class="submit-btn">
+                <i class="material-icons-round">cloud_upload</i>
+                رفع التطبيق
+            </button>
+
+            <div class="alert" id="alert"></div>
+        </form>
+    </div>
+    <footer>
+    تصميم وبرمجه ثابت الذعمري 
+    لتواصل 
+    736091318/771846811
+  </footer>
+
+   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="firebase-config.js"></script>
+
+<script>
+    
+    const db = firebase.database();
+    const storage = firebase.storage();
+    const auth = firebase.auth();
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // العناصر الأساسية
+        const screenshotsInput = document.getElementById('screenshots');
+        const screenshotsGrid = document.getElementById('screenshotsGrid');
+        const uploadForm = document.getElementById('uploadForm');
+        const submitBtn = document.querySelector('#uploadForm button[type="submit"]');
+        
+        // المتغيرات العامة
+        let uploadType = 'file';
+        let iconURL = '';
+
+        // ======= معاينة الصور =======
+        screenshotsInput.addEventListener('change', function(e) {
+            screenshotsGrid.innerHTML = '';
+            const files = Array.from(e.target.files);
+            
+            files.forEach(file => {
+                if (!file.type.startsWith('image/')) return;
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const container = document.createElement('div');
+                    container.className = 'screenshot-item';
+                    
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    img.style.cssText = `
+                        width: 100%;
+                        height: 150px;
+                        object-fit: cover;
+                        border-radius: 8px;
+                    `;
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = '×';
+                    deleteBtn.style.cssText = `
+                        position: absolute;
+                        top: 5px;
+                        left: 5px;
+                        background: red;
+                        color: white;
+                        border: none;
+                        border-radius: 50%;
+                        width: 25px;
+                        height: 25px;
+                        cursor: pointer;
+                        font-size: 18px;
+                    `;
+                    
+                    deleteBtn.onclick = () => {
+                        container.remove();
+                        const newFiles = Array.from(screenshotsInput.files).filter(f => f !== file);
+                        const dataTransfer = new DataTransfer();
+                        newFiles.forEach(f => dataTransfer.items.add(f));
+                        screenshotsInput.files = dataTransfer.files;
+                    };
+                    
+                    container.appendChild(img);
+                    container.appendChild(deleteBtn);
+                    screenshotsGrid.appendChild(container);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // ======= معالجة الأيقونة =======
+        document.getElementById('appIcon').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('iconPreview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // ======= معالجة الملف =======
+        document.getElementById('appFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('appTitle').value = file.name.replace(/\.[^/.]+$/, "");
+                document.getElementById('appSize').value = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+            }
+        });
+
+        // ======= تبديل طريقة الرفع =======
+        window.handleFileOption = function(type) {
+            uploadType = type;
+            document.getElementById('fileUploadSection').classList.toggle('hidden', type !== 'file');
+            document.getElementById('linkUploadSection').classList.toggle('hidden', type !== 'link');
+        };
+
+        // ======= معالجة النموذج =======
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                // تعطيل الزر وإظهار حالة التحميل
+                submitBtn.disabled = true;
+                document.getElementById('uploadStatus').style.display = 'flex';
+                document.getElementById('progressText').textContent = '0%';
+
+                const user = auth.currentUser;
+                if (!user) {
+                    showAlert('error', 'يجب تسجيل الدخول أولاً');
+                    return;
+                }
+
+                // التحقق من البيانات
+                const screenshots = screenshotsInput.files;
+                const appType = document.getElementById('appType').value;
+
+                if (!document.getElementById('appIcon').files[0]) {
+                    showAlert('error', 'الرجاء اختيار أيقونة التطبيق');
+                    return;
+                }
+
+                if (screenshots.length !== 3) {
+                    showAlert('error', 'الرجاء اختيار 3 صور للشرح');
+                    return;
+                }
+
+                // رفع الملفات
+                const iconURL = await uploadFile(document.getElementById('appIcon').files[0], 'icons');
+                const screenshotUrls = await Promise.all(
+                    Array.from(screenshots).map(file => uploadFile(file, 'screenshots'))
+                );
+
+                // معالجة رابط التطبيق
+                let downloadLink, fileSize;
+                if (uploadType === 'file') {
+                    const appFile = document.getElementById('appFile').files[0];
+                    if (!appFile) {
+                        showAlert('error', 'الرجاء اختيار ملف التطبيق');
+                        return;
+                    }
+                    downloadLink = await uploadFile(appFile, 'apps');
+                    fileSize = (appFile.size / (1024 * 1024)).toFixed(1) + ' MB';
+                } else {
+                    downloadLink = document.getElementById('appLink').value;
+                    fileSize = document.getElementById('appSize').value || 'N/A';
+                }
+
+                // إنشاء بيانات التطبيق
+                const appData = {
+                    title: document.getElementById('appTitle').value,
+                    icon: iconURL,
+                    dec: document.getElementById('appDescription').value,
+                    size: fileSize,
+                    type: appType,
+                    sc1: screenshotUrls[0],
+                    sc2: screenshotUrls[1],
+                    sc3: screenshotUrls[2],
+                    project: downloadLink,
+                    time: new Date().toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        hour12: true
+                    }),
+                    uid: user.uid
+                };
+
+                await db.ref(appType === 'swb' ? 'data1' : 'data2').push(appData);
+                
+                // إظهار نافذة النجاح
+                document.getElementById('uploadStatus').style.display = 'none';
+                document.getElementById('successModal').style.display = 'flex';
+                submitBtn.disabled = false;
+
+            } catch (error) {
+                document.getElementById('uploadStatus').style.display = 'none';
+                submitBtn.disabled = false;
+                showAlert('error', `حدث خطأ: ${error.message}`);
+            }
+        });
+
+        // ======= دوال مساعدة =======
+        async function uploadFile(file, path) {
+            return new Promise((resolve, reject) => {
+                const storageRef = storage.ref(`${path}/${Date.now()}_${file.name}`);
+                const uploadTask = storageRef.put(file);
+
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                        document.getElementById('progressBar').style.width = progress + '%';
+                        document.getElementById('progressText').textContent = progress + '%';
+                    },
+                    (error) => reject(error),
+                    () => uploadTask.snapshot.ref.getDownloadURL().then(resolve)
+                );
+            });
+        }
+
+        function showAlert(type, message) {
+            const alertBox = document.getElementById('alert');
+            alertBox.className = `alert-${type}`;
+            alertBox.textContent = message;
+            alertBox.style.display = 'block';
+            setTimeout(() => alertBox.style.display = 'none', 5000);
+        }
+
+        function resetForm() {
+            uploadForm.reset();
+            document.getElementById('iconPreview').src = '';
+            screenshotsGrid.innerHTML = '';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('appSize').value = '';
+            handleFileOption('file');
+        }
+
+        // إغلاق نافذة التأكيد
+        window.closeModal = function() {
+            document.getElementById('successModal').style.display = 'none';
+            resetForm();
+        }
+    });
+</script>
+</body>
+</html>

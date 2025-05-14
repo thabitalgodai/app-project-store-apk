@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام المصادقة الآمن</title>
+  <!-- تحسين تحميل الخطوط -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- تحسين تحميل سكربتات Firebase باستخدام defer -->
+  <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --success-color: #27ae60;
+      --danger-color: #e74c3c;
+      --transition-speed: 0.3s;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    body {
+      background: #f8f9fa;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      line-height: 1.6;
+    }
+
+    .container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      width: 95%;
+      max-width: 400px;
+      margin: 1rem;
+      transition: transform var(--transition-speed) ease;
+    }
+
+    .container:hover {
+      transform: translateY(-2px);
+    }
+
+    .form-title {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 1.8rem;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.6rem;
+      color: var(--primary-color);
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.9rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color var(--transition-speed) ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 0.9rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--secondary-color);
+      color: white;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 
+        background-color var(--transition-speed) ease,
+        transform 0.1s ease;
+    }
+
+    .btn:hover {
+      background: #2980b9;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .toggle-form {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .toggle-form a {
+      color: var(--secondary-color);
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color var(--transition-speed) ease;
+    }
+
+    .toggle-form a:hover {
+      color: #2980b9;
+    }
+
+    .error-message {
+      color: var(--danger-color);
+      font-size: 0.9rem;
+      margin-top: 0.8rem;
+      padding: 0.8rem;
+      background: #f8d7da;
+      border-radius: 6px;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1.5rem;
+      }
+      
+      .form-title {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- نموذج التسجيل -->
+  <div id="signup-form">
+    <h2 class="form-title">إنشاء حساب جديد</h2>
+    <form onsubmit="signup(event)">
+      <div class="form-group">
+        <label for="name">الاسم الكامل</label>
+        <input type="text" id="name" required autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label for="email">البريد الإلكتروني</label>
+        <input type="email" id="email" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="password">كلمة المرور (6 أحرف على الأقل)</label>
+        <input type="password" id="password" required minlength="6" autocomplete="new-password">
+      </div>
+      <button type="submit" class="btn">إنشاء حساب</button>
+      <div class="toggle-form">
+        لديك حساب بالفعل؟ <a onclick="showLogin()">سجل الدخول</a>
+      </div>
+      <div class="error-message" id="signup-error"></div>
+    </form>
+  </div>
+
+  <!-- نموذج الدخول -->
+  <div id="login-form" style="display: none;">
+    <h2 class="form-title">تسجيل الدخول</h2>
+    <form onsubmit="login(event)">
+      <div class="form-group">
+        <label for="login-email">البريد الإلكتروني</label>
+        <input type="email" id="login-email" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="login-password">كلمة المرور</label>
+        <input type="password" id="login-password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn">الدخول إلى الحساب</button>
+      <div class="toggle-form">
+        جديد هنا؟ <a onclick="showSignup()">أنشئ حسابًا</a>
+      </div>
+      <div class="error-message" id="login-error"></div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // التهيئة بعد تحميل الصفحة
+  document.addEventListener('DOMContentLoaded', () => {
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7A8-DKqjzeKEi9BavHLDJ18J_PT6bsT0",
+      authDomain: "mozkrh2.firebaseapp.com",
+      databaseURL: "https://mozkrh2-default-rtdb.firebaseio.com",
+      projectId: "mozkrh2",
+      storageBucket: "mozkrh2.appspot.com",
+      messagingSenderId: "1072010410647",
+      appId: "1:1072010410647:web:603ddf7d867db870b787d2"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    
+    // التحقق من حالة المصادقة
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) window.location.href = 'home.html';
+    });
+  });
+
+  // إدارة النماذج
+  function showLogin() {
+    document.getElementById('signup-form').style.display = 'none';
+    document.getElementById('login-form').style.display = 'block';
+    resetErrors();
+  }
+
+  function showSignup() {
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('signup-form').style.display = 'block';
+    resetErrors();
+  }
+
+  function resetErrors() {
+    document.querySelectorAll('.error-message').forEach(el => {
+      el.style.display = 'none';
+    });
+  }
+
+  // معالجة التسجيل
+  async function signup(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    btn.disabled = true;
+    
+    try {
+      const userCredential = await firebase.auth()
+        .createUserWithEmailAndPassword(
+          document.getElementById('email').value,
+          document.getElementById('password').value
+        );
+      
+      await userCredential.user.updateProfile({
+        displayName: document.getElementById('name').value
+      });
+
+      // حفظ بيانات المستخدم بدون كلمة المرور
+      await firebase.database().ref('users/' + userCredential.user.uid).set({
+        name: userCredential.user.displayName,
+        email: userCredential.user.email,
+        bio: "مرحبًا! أنا جديد هنا",
+        pic: "",
+        active: true,
+        uid: userCredential.user.uid,
+        createdAt: firebase.database.ServerValue.TIMESTAMP
+      });
+
+      window.location.href = 'home.html';
+    } catch (error) {
+      showError('signup-error', getArabicError(error.message));
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // معالجة الدخول
+  async function login(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    btn.disabled = true;
+    
+    try {
+      const userCredential = await firebase.auth()
+        .signInWithEmailAndPassword(
+          document.getElementById('login-email').value,
+          document.getElementById('login-password').value
+        );
+
+      const snapshot = await firebase.database()
+        .ref('users/' + userCredential.user.uid)
+        .once('value');
+
+      if (!snapshot.val()?.active) {
+        throw new Error('الحساب غير مفعل');
+      }
+
+      window.location.href = 'home.html';
+    } catch (error) {
+      showError('login-error', getArabicError(error.message));
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // إظهار الأخطاء
+  function showError(elementId, message) {
+    const errorElement = document.getElementById(elementId);
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+  }
+
+  // ترجمة الأخطاء
+  function getArabicError(message) {
+    const errorMap = {
+      "Password should be at least 6 characters": "كلمة المرور يجب أن تحتوي على 6 أحرف على الأقل",
+      "The email address is already in use by another account": "هذا البريد الإلكتروني مسجل مسبقًا",
+      "The password is invalid or the user does not have a password": "بيانات الدخول غير صحيحة",
+      "There is no user record corresponding to this identifier. The user may have been deleted": "الحساب غير موجود",
+      "Network Error": "خطأ في الشبكة، يرجى المحاولة لاحقًا",
+      "Too many unsuccessful login attempts": "محاولات دخول كثيرة، يرجى المحاولة لاحقًا"
+    };
+
+    return errorMap[message] || "حدث خطأ غير متوقع، يرجى المحاولة لاحقًا";
+  }
+</script>
+
+</body>
+</html>
