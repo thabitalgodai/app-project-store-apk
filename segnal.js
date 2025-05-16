@@ -34,29 +34,34 @@ function showSignup() {
 
 // تسجيل الدخول بجوجل
 async function googleLogin() {
-    try {
-        const result = await auth.signInWithPopup(googleProvider);
-        const user = result.user;
-        
+  try {
+    const result = await auth.signInWithPopup(googleProvider);
+    
+    // إضافة تحقق إضافي من حالة المستخدم
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
         const snapshot = await usersRef.child(user.uid).once('value');
         
         if (!snapshot.exists()) {
-            const userData = {
-                name: user.displayName,
-                email: user.email,
-                pic: user.photoURL || "",
-                bio: "No bio available",
-                active: "true",
-                uid: user.uid
-            };
-            
-            await usersRef.child(user.uid).set(userData);
+          await usersRef.child(user.uid).set({
+            name: user.displayName,
+            email: user.email,
+            pic: user.photoURL || "",
+            bio: "No bio available",
+            active: "true",
+            uid: user.uid
+          });
         }
         
-        window.location.href = 'index.html';
-    } catch (error) {
-        showError('login-error', getArabicError(error.message));
-    }
+        // استخدام توجيه مطلق بدل النسبي
+        window.location.href = 'index.html'; // ← التعديل هنا
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error details:', error); // ← أضف هذا للتصحيح
+    showError('login-error', getArabicError(error.message));
+  }
 }
 
 // إنشاء حساب
@@ -139,4 +144,4 @@ function clearErrors() {
     document.querySelectorAll('.error-message').forEach(el => {
         el.style.display = 'none';
     });
-}
+            }
