@@ -5,211 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>متجر التطبيقات الاحترافي</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary-color: #1a73e8;
-            --secondary-color: #fbbc04;
-            --background: #f8f9fa;
-            --surface: #ffffff;
-            --text-primary: #202124;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Tajawal', sans-serif;
-        }
-
-        body {
-            background: var(--background);
-            color: var(--text-primary);
-        }
-
-        /* التولبار المحسّن */
-        .toolbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 12px 16px;
-            background: var(--surface);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-            z-index: 1000;
-        }
-
-        .toolbar-icon {
-            color: var(--primary-color);
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .search-box {
-            flex: 1;
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 12px 48px 12px 16px;
-            border: 1px solid #dadce0;
-            border-radius: 24px;
-            font-size: 14px;
-            transition: all 0.3s;
-            background: #f8f9fa;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            background: var(--surface);
-            box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
-        }
-
-        /* شريط الأخبار المتحرك */
-        .news-ticker {
-            background: var(--primary-color);
-            color: white;
-            height: 40px;
-            padding: 12px;
-            margin-top: 64px;
-            overflow: hidden;
-            position: relative;
-            z-index: 999;
-        }
-
-        @keyframes marquee {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-
-        .marquee-content {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-            white-space: nowrap;
-            animation: marquee 20s linear infinite;
-            position: absolute;
-        }
-
-        /* قائمة التطبيقات */
-        .apps-container {
-            padding: 24px 16px;
-            margin-top: 40px;
-        }
-
-        .apps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 16px;
-            max-width: 1200px;
-            margin: 0 auto;
-            direction: ltr;
-        }
-
-        .app-card {
-            background: var(--surface);
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-            overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-            text-align: right;
-        }
-
-        .app-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-        }
-
-        .app-image {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            background: #f8f9fa;
-        }
-
-        .app-content {
-            padding: 5px;
-        }
-
-        .app-title {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 0px;
-            line-height: 1.4;
-            height: 2.2em;
-            overflow: hidden;
-        }
-
-        .app-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            color: #5f6368;
-        }
-
-        .rating {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--secondary-color);
-        }
-
-        /* القائمة الجانبية المعدلة */
-        .side-menu {
-            position: fixed;
-            top: 0;
-            left: -300px;
-            width: 280px;
-            height: 100vh;
-            background: var(--surface);
-            box-shadow: -2px 0 12px rgba(0,0,0,0.1);
-            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 24px;
-            z-index: 1001;
-        }
-
-        .side-menu.open {
-            right: 0;
-        }
-
-        .menu-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 12px;
-            border-radius: 8px;
-            transition: background 0.2s;
-        }
-
-        .menu-item:hover {
-            background: #f8f9fa;
-        }
-
-        @media (max-width: 600px) {
-            .apps-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .app-image {
-                height: 100px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/app_swb.css">
 </head>
 <body>
+	<!-- شاشة انتظار تحميل البيانات -->
+<div id="loadingOverlay">
+  <div class="shimmer-loader">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
     <!-- التولبار -->
     <div class="toolbar">
         <i class="material-icons-round toolbar-icon" onclick="history.back()">arrow_back</i>
@@ -243,13 +49,13 @@
             <h3>القائمة الرئيسية</h3>
             <i class="material-icons-round" style="color: #FF0000;" onclick="toggleMenu()">close</i>
         </div>
-        <div class="menu-item">
-    <i class="material-icons-round" style="color: #0072C6;" onclick="toggleMenu()">home</i>
-    <span>الصفحة الرئيسية</span>
+     <div class="menu-item" onclick="window.location.href='index.html'">
+  <i class="material-icons-round" style="color: #0072C6;">home</i>
+  <span>الصفحة الرئيسي</span>
 </div>
-         <div class="menu-item" onclick="window.location.href='login.html'">
+         <div class="menu-item" onclick="window.location.href='index.html'">
   <i class="material-icons-round" style="color: #0072C6;">apps</i>
-  <span>التطبيقات مفتوحة المصدر</span>
+  <span>التطبيقات apk</span>
 </div>
 <div class="menu-item" onclick="window.location.href='upload.html'">
   <i class="material-icons-round" style="color: #0072C6;">cloud_upload</i>
@@ -279,92 +85,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="firebase-config.js"></script>
-
-    <script>
-        
-        
-
-        // التحقق من حالة تسجيل الدخول
-        firebase.auth().onAuthStateChanged((user) => {
-            if (!user) {
-                // إذا لم يكن المستخدم مسجلاً، توجيه لصفحة التسجيل
-                window.location.href = 'segnal.html';
-            } else {
-                // إذا كان مسجلاً، تهيئة خدمات قاعدة البيانات
-                const db = firebase.database();
-                const appsRef = db.ref('data1');
-                let allApps = [];
-                let searchTimeout;
-
-                // جلب البيانات من قاعدة البيانات
-                appsRef.on('value', (snapshot) => {
-                    allApps = [];
-                    snapshot.forEach((child) => {
-                        allApps.push(child.val());
-                    });
-                    renderApps(allApps);
-                });
-
-                // إعداد حقل البحث
-                document.getElementById('searchInput').addEventListener('input', (e) => {
-                    clearTimeout(searchTimeout);
-                    searchTimeout = setTimeout(() => {
-                        const term = e.target.value.toLowerCase().trim();
-                        const filtered = allApps.filter((app) =>
-                            app.title.toLowerCase().includes(term) ||
-                            (app.dec && app.dec.toLowerCase().includes(term))
-                        );
-                        renderApps(filtered);
-                    }, 300);
-                });
-            }
-        });
-
-        // عرض التطبيقات
-        function renderApps(apps) {
-            const grid = document.getElementById('appsGrid');
-            grid.innerHTML = apps.length ? '' : '<p class="no-results">لم يتم العثور على نتائج</p>';
-            
-            apps.forEach(app => {
-                const card = document.createElement('div');
-                card.className = 'app-card';
-                card.innerHTML = `
-                    <img src="${app.icon}" class="app-image" alt="${app.title}">
-                    <div class="app-content">
-                        <h3 class="app-title">${app.title}</h3>
-                        <div class="app-meta">
-                            <span>${app.size || 'N/A'}</span>
-                            <div class="rating">
-                                <span>${app.rating || 4.5}</span>
-                                <i class="material-icons-round">star</i>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                card.onclick = () => openAppDetails(app);
-                grid.appendChild(card);
-            });
-        }
-
-        // فتح التفاصيل
-        function openAppDetails(app) {
-            const params = new URLSearchParams(app);
-            window.location.href = `preview.html?${params}`;
-        }
-
-        // التحكم بالقائمة
-        function toggleMenu() {
-            document.getElementById('sideMenu').classList.toggle('open');
-        }
-
-        // إغلاق القائمة بالنقر خارجها
-        document.addEventListener('click', e => {
-            const menu = document.getElementById('sideMenu');
-            if (!menu.contains(e.target) && !e.target.closest('.toolbar-icon')) {
-                menu.classList.remove('open');
-            }
-        });
-    </script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/app_swb.js" defer></script>
 </body>
 </html>
