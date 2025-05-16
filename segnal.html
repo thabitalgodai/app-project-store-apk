@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بوابة الدخول</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/segnal.css">
+</head>
+<body>
+
+  <div class="hero-section"></div>
+
+  <div class="container">
+    <div class="auth-box">
+      <div id="signup-form">
+        <h2 class="form-title">إنشاء حساب جديد</h2>
+        <form onsubmit="signup(event)">
+          <div class="form-group">
+            <label for="name">الاسم الكامل</label>
+            <input type="text" id="name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">البريد الإلكتروني</label>
+            <input type="email" id="email" required>
+          </div>
+          <div class="form-group">
+            <label for="password">كلمة المرور</label>
+            <input type="password" id="password" required minlength="6">
+          </div>
+          <button type="submit" class="btn">إنشاء حساب</button>
+          <div class="toggle-form">
+            لديك حساب بالفعل؟ <a onclick="showLogin()">تسجيل الدخول</a>
+          </div>
+          <div class="error-message" id="signup-error"></div>
+        </form>
+      </div>
+
+      <div id="login-form" style="display: none;">
+        <h2 class="form-title">تسجيل الدخول</h2>
+        <form onsubmit="login(event)">
+          <div class="form-group">
+            <label for="login-email">البريد الإلكتروني</label>
+            <input type="email" id="login-email" required>
+          </div>
+          <div class="form-group">
+            <label for="login-password">كلمة المرور</label>
+            <input type="password" id="login-password" required>
+          </div>
+          <button type="submit" class="btn">الدخول إلى الحساب</button>
+          <div class="toggle-form">
+            لا تملك حسابًا؟ <a onclick="showSignup()">إنشاء حساب جديد</a>
+          </div>
+          <div class="error-message" id="login-error"></div>
+        </form>
+      </div>
+
+      <div class="auth-divider">
+        <span>أو</span>
+      </div>
+
+      <button onclick="googleLogin()" class="google-btn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+        <span>المتابعة باستخدام جوجل</span>
+      </button>
+      <footer>
+    تصميم وبرمجه ثابت الذعمري 
+    لتواصل 
+    736091318/771846811
+  </footer>
+    </div>
+  </div>
+
+  
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  
+  <script>
+    // الدوال المسؤولة عن التبديل بين النماذج
+    function showLogin() {
+      document.getElementById('signup-form').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
+      document.querySelector('.auth-divider').style.display = 'block';
+      clearErrors();
+    }
+
+    function showSignup() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('signup-form').style.display = 'block';
+      document.querySelector('.auth-divider').style.display = 'block';
+      clearErrors();
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.error-message').forEach(el => {
+        el.style.display = 'none';
+      });
+    }
+    window.showLogin = showLogin;
+    window.showSignup = showSignup;
+    window.clearErrors = clearErrors;
+  </script>
+  <script src="js/segnal.js" defer></script>
+
+</body>
+</html>
