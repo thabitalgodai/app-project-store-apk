@@ -1,16 +1,15 @@
 firebase.auth().onAuthStateChanged((user) => {
-            if (!user) {
-                // إذا لم يكن المستخدم مسجلاً، توجيه لصفحة التسجيل
-                window.location.href = 'segnal.html';
-            } else {
-                // إذا كان مسجلاً، تهيئة خدمات قاعدة البيانات
-                const db = firebase.database();
-                const appsRef = db.ref('data1');
-                let allApps = [];
-                let searchTimeout;
+    if (!user) {
+        window.location.href = 'segnal.html';
+    } else {
+        // قاعدة البيانات
+        const db = firebase.database();
+        const appsRef = db.ref('data1');
+        let allApps = [];
+        let searchTimeout;
 
-                // جلب البيانات من قاعدة البيانات
-                appsRefappsRef.on('value', (snapshot) => {
+        // التطبيقات
+        appsRef.on('value', (snapshot) => {
   // إظهار التموج
   document.getElementById('loadingOverlay').style.display = 'flex';
 
